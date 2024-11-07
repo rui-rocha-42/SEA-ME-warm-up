@@ -1,8 +1,15 @@
 #include <iostream>
 #include <algorithm>
-#include "convert.h"
+#include <vector>
 
 using namespace std;
+
+bool validate_command(const std::string&);
+std::string uppercase_string(const std::string&);
+std::string lowercase_string(const std::string&);
+
+// Available commands
+const std::vector<std::string> commands = { "up", "down" };
 
 int main(int argc, char** argv)
 {

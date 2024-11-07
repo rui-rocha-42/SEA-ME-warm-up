@@ -4,4 +4,4 @@ project(SEA_ME_warm_up)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(SEA_ME_warm_up
-        module00/convert.cpp)
+        main.cpp)
