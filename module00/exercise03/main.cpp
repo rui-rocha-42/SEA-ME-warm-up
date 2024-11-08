@@ -1,21 +1,103 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include "phonebook.h"
 
 using namespace std;
 
-// print a pair
-template <typename T1, typename T2>
-void print_pair(pair<T1,T2> & p) {
-    cout << p.first << ": " << p.second << endl;
+Phonebook contacts {
+    Contact{"Rui", "123", "RR"},
+    Contact{"Pedro", "345", "Petrus"}
+};
+
+int parse_int(const string& str) {
+    try {
+        return stoi(str);
+    }
+    catch(...) {
+        return -1;
+    }
 }
 
-// print the elements of the map
-template<typename T>
-void print_map(T & m) {
-    if(m.empty()) return;
-    for(auto x : m) print_pair(x);
-    cout << endl;
+void add_contact(const std::map<std::string, std::string>& options) {
+    auto it = options.find("n");
+    if(it == options.end()){
+        cout << "Name is required\n";
+        return;
+    }
+    string name = it->second;
+
+    it = options.find("p");
+    if(it == options.end()){
+        cout << "Phone number is required\n";
+        return;
+    }
+    string phone_number = it->second;
+
+    it = options.find("k");
+    if(it == options.end()){
+        cout << "Nickname is required\n";
+        return;
+    }
+    string nickname = it->second;
+
+    cout << "Adding user " << name << " " << phone_number << " " << nickname << endl;
+    contacts.add_contact(Contact {name, phone_number, nickname});
+}
+
+void remove_contact(const std::map<std::string, std::string>& options) {
+    auto it = options.find("i");
+    bool removed;
+    if(it == options.end()){
+        it = options.find("p");
+        if(it == options.end()){
+            cout << "No inputted id\n";
+            return;
+        }
+        // Retrieve id of phone number (if not exists return)
+        string phone = it->second;
+        removed = contacts.remove_contact(phone);
+    }
+    else {
+        int index = parse_int(it->second);
+        cout << "Removing contact with index " << index << endl;
+        removed = contacts.remove_contact(index);
+    }
+    if(removed) cout << "Successfully removed\n";
+    else cout << "Error removing\n";
+}
+
+void search_contact(const std::map<std::string, std::string>& options) {
+    auto it = options.find("i");
+    if(it == options.end()){
+        cout << "Listing all contacts\n";
+        contacts.print();
+        return;
+    }
+    int index = parse_int(it->second);
+
+    cout << "Searching contact with index " << index << endl;
+    if (auto contact = contacts.contact(index); contact.has_value()) {
+        contact.value().print();
+    }
+}
+
+void bookmark_contact(const std::map<std::string, std::string>& options) {
+    auto it = options.find("i");
+    if(it == options.end()){
+        cout << "Listing bookmarked contacts\n";
+        return;
+    }
+    int index = parse_int(it->second);
+
+    if(index < 0 || index > contacts.size() - 1) {
+        cout << "Index out of bounds\n";
+        return;
+    }
+    cout << "Bookmarking contact with index " << index << endl;
+    if (auto contact = contacts.contact(index); contact.has_value()) {
+        contact.value().bookmark();
+    }
 }
 
 string prompt(const string& p) {
@@ -31,7 +113,7 @@ bool jump(const string& select) {
     string command {select};
     std::map<std::string, std::string> options;
 
-    // Checking if there's whitespace
+    // Checking if there's whitespace to check for options
     if(whitespace != std::string::npos) {
         command = select.substr(0, whitespace);
 
@@ -50,8 +132,22 @@ bool jump(const string& select) {
         }
     }
 
-    cout << "COMMAND: " << command << endl;
-    print_map(options);
+    using jumpfunc = void(*)(const std::map<std::string, std::string>&);
+
+    const std::map<string, jumpfunc> jumpmap {
+            { "ADD", ::add_contact },
+            { "SEARCH",::search_contact },
+            { "REMOVE", ::remove_contact },
+            { "BOOKMARK", ::bookmark_contact },
+    };
+
+    const auto it = jumpmap.find(command);
+    if (it != jumpmap.end()) it->second(options);
+    else {
+        cout << "Invalid command\n";
+        return false;
+    }
+
     return true;
 }
 
