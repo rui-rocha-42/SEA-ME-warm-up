@@ -22,7 +22,10 @@ void Phonebook::add_contact(Contact &contact) {
 }
 
 void Phonebook::print() const {
-    if(contacts.empty()) return;
+    if(contacts.empty()) {
+        std::cout << "No contacts\n";
+        return;
+    }
     for(const Contact& i : contacts) i.print();
 }
 

@@ -6,10 +6,7 @@
 
 using namespace std;
 
-Phonebook contacts {
-    Contact{"Rui", "123", "RR"},
-    Contact{"Pedro", "345", "Petrus"}
-};
+Phonebook contacts {};
 
 int parse_int(const string& str) {
     try {
@@ -20,7 +17,7 @@ int parse_int(const string& str) {
     }
 }
 
-void add_contact(const std::map<std::string, std::string>& options) {
+void add_contact(const map<string, string>& options) {
     auto it = options.find("n");
     if(it == options.end()){
         cout << "Name is required\n";
@@ -43,10 +40,10 @@ void add_contact(const std::map<std::string, std::string>& options) {
     string nickname = it->second;
 
     cout << "\nAdding user " << name << " " << phone_number << " " << nickname << endl;
-    contacts.add_contact(*std::make_unique<Contact> (name, phone_number, nickname));
+    contacts.add_contact(*make_unique<Contact> (name, phone_number, nickname));
 }
 
-void remove_contact(const std::map<std::string, std::string>& options) {
+void remove_contact(const map<string, string>& options) {
     auto it = options.find("i");
     bool removed;
     if(it == options.end()){
@@ -69,7 +66,7 @@ void remove_contact(const std::map<std::string, std::string>& options) {
     else cout << "Error removing\n";
 }
 
-void search_contact(const std::map<std::string, std::string>& options) {
+void search_contact(const map<string, string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
         cout << "\nListing all contacts\n";
@@ -78,13 +75,13 @@ void search_contact(const std::map<std::string, std::string>& options) {
     }
     int index = parse_int(it->second);
 
-    cout << "Searching contact with index " << index << endl;
+    cout << "\nSearching contact with index " << index << endl;
     if (auto contact = contacts.contact(index); contact.has_value()) {
         contact.value().print();
     }
 }
 
-void bookmark_contact(const std::map<std::string, std::string>& options) {
+void bookmark_contact(const map<string, string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
         cout << "\nListing bookmarked contacts\n";
@@ -98,9 +95,9 @@ void bookmark_contact(const std::map<std::string, std::string>& options) {
 }
 
 string prompt(const string& p) {
-    std::string r {};
+    string r {};
     cout << p << ">";
-    getline(std::cin, r, '\n');
+    getline(cin, r, '\n');
 
     return r;
 }
@@ -108,17 +105,17 @@ string prompt(const string& p) {
 bool jump(const string& select) {
     size_t whitespace = select.find(' ');
     string command {select};
-    std::map<std::string, std::string> options;
+    map<string, string> options;
 
     // Checking if there's whitespace to check for options
-    if(whitespace != std::string::npos) {
+    if(whitespace != string::npos) {
         command = select.substr(0, whitespace);
 
         string options_str {select.substr(whitespace + 1, select.size())};
-        std::istringstream iss(options_str);
-        std::string token;
+        istringstream iss(options_str);
+        string token;
 
-        std::string current_key;
+        string current_key;
 
         while (iss >> token) {
             if (token[0] == '-') {
@@ -129,9 +126,9 @@ bool jump(const string& select) {
         }
     }
 
-    using jumpfunc = void(*)(const std::map<std::string, std::string>&);
+    using jumpfunc = void(*)(const map<string, string>&);
 
-    const std::map<string, jumpfunc> jumpmap {
+    const map<string, jumpfunc> jumpmap {
             { "ADD", ::add_contact },
             { "SEARCH",::search_contact },
             { "REMOVE", ::remove_contact },
