@@ -4,47 +4,59 @@
 
 #include "phonebook.h"
 #include <algorithm>
+#include <iterator>
 
 // initializer-list ctor
 Phonebook::Phonebook(std::initializer_list<Contact> il) : contacts {il.begin(), il.end()} {
-    std::cout << "phonebook initializer-list ctor\n";
+    //std::cout << "phonebook initializer-list ctor\n";
 }
 
-// copy ctor
-Phonebook::Phonebook(const Phonebook& rhs) : contacts {rhs.contacts} {
-    std::cout << "phonebook copy ctor\n";
-}
-
-// move ctor
-Phonebook::Phonebook(Phonebook&& rhs) noexcept
-        : contacts {std::move(rhs.contacts)} {
-    std::cout << "phonebook move ctor\n";
-}
-
-// dtor
-Phonebook::~Phonebook() {
-    std::cout << "phonebook dtor\n";
-}
-
-void Phonebook::add_contact(const Contact &contact) {
+void Phonebook::add_contact(Contact &contact) {
+    auto it = std::find(contacts.begin(), contacts.end(), contact);
+    if(it != contacts.end()) {
+        std::cout << "Contact already exists in phonebook\n";
+        return;
+    }
     contacts.emplace_back(contact);
-}
-
-unsigned long long Phonebook::size() const {
-    return contacts.size();
+    std::cout << "Contact added\n";
 }
 
 void Phonebook::print() const {
     if(contacts.empty()) return;
     for(const Contact& i : contacts) i.print();
-    std::cout << std::endl;
+}
+
+void Phonebook::print_bookmarks() const {
+    std::vector<Contact> bookmarks;
+    std::copy_if(contacts.begin(), contacts.end(), std::back_inserter(bookmarks),
+                 [](const Contact& x) { return x.bookmarked(); });
+
+    if(bookmarks.empty()) {
+        std::cout << "No bookmarks\n";
+        return;
+    }
+    for(const Contact& i : bookmarks) i.print();
 }
 
 std::optional<Contact> Phonebook::contact(int index) {
+    if (auto it = contact_it(index); it.has_value()) {
+        return *it.value();
+    }
+    return {};
+}
+
+std::optional<std::vector<Contact>::iterator> Phonebook::contact_it(int index) {
     if(index < 0 || index > contacts.size() -1) {
+        std::cout << "Index out of bounds\n";
         return {};
     }
-    return contacts[index];
+    return contacts.begin() + index;
+}
+
+void Phonebook::bookmark_contact(int index) {
+    if (auto it = contact_it(index); it.has_value()) {
+        it.value()->bookmark();
+    }
 }
 
 bool Phonebook::remove_contact(const std::string& phone_number) {
@@ -59,9 +71,8 @@ bool Phonebook::remove_contact(const std::string& phone_number) {
 }
 
 bool Phonebook::remove_contact(int index) {
-    auto obj = contact(index);
-    if (auto it = contact(index); it.has_value()) {
-        contacts.erase(contacts.begin() + index);
+    if (auto it = contact_it(index); it.has_value()) {
+        contacts.erase(it.value());
         return true;
     }
     return false;

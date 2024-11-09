@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <future>
 #include "phonebook.h"
 
 using namespace std;
@@ -41,8 +42,8 @@ void add_contact(const std::map<std::string, std::string>& options) {
     }
     string nickname = it->second;
 
-    cout << "Adding user " << name << " " << phone_number << " " << nickname << endl;
-    contacts.add_contact(Contact {name, phone_number, nickname});
+    cout << "\nAdding user " << name << " " << phone_number << " " << nickname << endl;
+    contacts.add_contact(*std::make_unique<Contact> (name, phone_number, nickname));
 }
 
 void remove_contact(const std::map<std::string, std::string>& options) {
@@ -51,16 +52,17 @@ void remove_contact(const std::map<std::string, std::string>& options) {
     if(it == options.end()){
         it = options.find("p");
         if(it == options.end()){
-            cout << "No inputted id\n";
+            cout << "\nNo inputted id\n";
             return;
         }
         // Retrieve id of phone number (if not exists return)
         string phone = it->second;
+        cout << "\nRemoving contact with phone number " << phone << endl;
         removed = contacts.remove_contact(phone);
     }
     else {
         int index = parse_int(it->second);
-        cout << "Removing contact with index " << index << endl;
+        cout << "\nRemoving contact with index " << index << endl;
         removed = contacts.remove_contact(index);
     }
     if(removed) cout << "Successfully removed\n";
@@ -70,7 +72,7 @@ void remove_contact(const std::map<std::string, std::string>& options) {
 void search_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
-        cout << "Listing all contacts\n";
+        cout << "\nListing all contacts\n";
         contacts.print();
         return;
     }
@@ -85,19 +87,14 @@ void search_contact(const std::map<std::string, std::string>& options) {
 void bookmark_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
-        cout << "Listing bookmarked contacts\n";
+        cout << "\nListing bookmarked contacts\n";
+        contacts.print_bookmarks();
         return;
     }
     int index = parse_int(it->second);
 
-    if(index < 0 || index > contacts.size() - 1) {
-        cout << "Index out of bounds\n";
-        return;
-    }
     cout << "Bookmarking contact with index " << index << endl;
-    if (auto contact = contacts.contact(index); contact.has_value()) {
-        contact.value().bookmark();
-    }
+    contacts.bookmark_contact(index);
 }
 
 string prompt(const string& p) {
@@ -156,11 +153,11 @@ int main()
     cout << "PHONEBOOK\n";
 
     string pstr {
-            "Commands: \nADD -n name -p phonenumber -k nickname\n"
+            "\nCommands: \nADD -n name -p phonenumber -k nickname\n"
             "SEARCH [-i <index>]\n"
             "REMOVE -i <index>/-p <phonenumber>\n"
             "BOOKMARK [-i <index>]\n"
-            "EXIT\n"
+            "EXIT\n\n"
     };
 
     for (auto key = prompt(pstr); key != "EXIT"; key = prompt(pstr)) {

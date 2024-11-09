@@ -7,22 +7,22 @@
 
 #include "contact.h"
 #include <vector>
+#include <set>
 #include <optional>
 
 class Phonebook  {
     std::vector<Contact> contacts {};
+    std::optional<std::vector<Contact>::iterator> contact_it(int index);
 public:
-    Phonebook() { std::cout << "default phonebook ctor\n" ; }   // default ctor
+    Phonebook() = default;   // default ctor
     Phonebook(std::initializer_list<Contact> il);    // il ctor
-    Phonebook(const Phonebook& rhs);           // copy ctor
-    Phonebook(Phonebook&& rhs) noexcept;       // move ctor
-    ~Phonebook();
     void print() const;
-    void add_contact(const Contact& contact);
+    void print_bookmarks() const;
+    void add_contact(Contact& contact);
     bool remove_contact(int index);
     bool remove_contact(const std::string& phone_number);
+    void bookmark_contact(int index);
     std::optional<Contact> contact(int index);
-    [[nodiscard]] unsigned long long size() const;
 };
 
 
