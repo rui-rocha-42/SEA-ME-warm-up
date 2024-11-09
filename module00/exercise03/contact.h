@@ -18,7 +18,7 @@ public:
     Contact(std::string  name, std::string  phone_number, std::string  nickname);
     Contact(const Contact&); // copy constructor
     Contact(Contact&& rhs) noexcept;       // move ctor
-    ~Contact(); // destructor
+    ~Contact() = default; // destructor
     Contact& operator = (Contact); // copy/assignment operator
     bool operator==(const Contact&) const; // equality operator
     void print() const;

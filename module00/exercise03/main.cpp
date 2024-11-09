@@ -4,11 +4,9 @@
 #include <future>
 #include "phonebook.h"
 
-using namespace std;
-
 Phonebook contacts {};
 
-int parse_int(const string& str) {
+int parse_int(const std::string& str) {
     try {
         return stoi(str);
     }
@@ -17,105 +15,104 @@ int parse_int(const string& str) {
     }
 }
 
-void add_contact(const map<string, string>& options) {
+void add_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("n");
     if(it == options.end()){
-        cout << "Name is required\n";
+        std::cout << "Name is required\n";
         return;
     }
-    string name = it->second;
+    std::string name = it->second;
 
     it = options.find("p");
     if(it == options.end()){
-        cout << "Phone number is required\n";
+        std::cout << "Phone number is required\n";
         return;
     }
-    string phone_number = it->second;
+    std::string phone_number = it->second;
 
     it = options.find("k");
     if(it == options.end()){
-        cout << "Nickname is required\n";
+        std::cout << "Nickname is required\n";
         return;
     }
-    string nickname = it->second;
+    std::string nickname = it->second;
 
-    cout << "\nAdding user " << name << " " << phone_number << " " << nickname << endl;
+    std::cout << "\nAdding user " << name << " " << phone_number << " " << nickname << "\n";
     contacts.add_contact(*make_unique<Contact> (name, phone_number, nickname));
 }
 
-void remove_contact(const map<string, string>& options) {
+void remove_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("i");
     bool removed;
     if(it == options.end()){
         it = options.find("p");
         if(it == options.end()){
-            cout << "\nNo inputted id\n";
+            std::cout << "\nNo inputted id\n";
             return;
         }
         // Retrieve id of phone number (if not exists return)
-        string phone = it->second;
-        cout << "\nRemoving contact with phone number " << phone << endl;
+        std::string phone = it->second;
+        std::cout << "\nRemoving contact with phone number " << phone << "\n";
         removed = contacts.remove_contact(phone);
     }
     else {
         int index = parse_int(it->second);
-        cout << "\nRemoving contact with index " << index << endl;
+        std::cout << "\nRemoving contact with index " << index << "\n";
         removed = contacts.remove_contact(index);
     }
-    if(removed) cout << "Successfully removed\n";
-    else cout << "Error removing\n";
+    if(removed) std::cout << "Successfully removed\n";
+    else std::cout << "Error removing\n";
 }
 
-void search_contact(const map<string, string>& options) {
+void search_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
-        cout << "\nListing all contacts\n";
+        std::cout << "\nListing all contacts\n";
         contacts.print();
         return;
     }
     int index = parse_int(it->second);
 
-    cout << "\nSearching contact with index " << index << endl;
+    std::cout << "\nSearching contact with index " << index << "\n";
     if (auto contact = contacts.contact(index); contact.has_value()) {
         contact.value().print();
     }
 }
 
-void bookmark_contact(const map<string, string>& options) {
+void bookmark_contact(const std::map<std::string, std::string>& options) {
     auto it = options.find("i");
     if(it == options.end()){
-        cout << "\nListing bookmarked contacts\n";
+        std::cout << "\nListing bookmarked contacts\n";
         contacts.print_bookmarks();
         return;
     }
     int index = parse_int(it->second);
 
-    cout << "Bookmarking contact with index " << index << endl;
+    std::cout << "Bookmarking contact with index " << index << "\n";
     contacts.bookmark_contact(index);
 }
 
-string prompt(const string& p) {
-    string r {};
-    cout << p << ">";
-    getline(cin, r, '\n');
-
+std::string prompt(const std::string& p) {
+    std::string r {};
+    std::cout << p << ">";
+    getline(std::cin, r, '\n');
     return r;
 }
 
-bool jump(const string& select) {
+bool jump(const std::string& select) {
     size_t whitespace = select.find(' ');
-    string command {select};
-    map<string, string> options;
+    std::string command {select};
+    std::map<std::string, std::string> options;
 
     // Checking if there's whitespace to check for options
-    if(whitespace != string::npos) {
+    if(whitespace != std::string::npos) {
         command = select.substr(0, whitespace);
 
-        string options_str {select.substr(whitespace + 1, select.size())};
-        istringstream iss(options_str);
-        string token;
+        std::string options_str {select.substr(whitespace + 1, select.size())};
+        std::istringstream iss(options_str);
+        std::string token;
 
-        string current_key;
+        std::string current_key;
 
         while (iss >> token) {
             if (token[0] == '-') {
@@ -126,9 +123,9 @@ bool jump(const string& select) {
         }
     }
 
-    using jumpfunc = void(*)(const map<string, string>&);
+    using jumpfunc = void(*)(const std::map<std::string, std::string>&);
 
-    const map<string, jumpfunc> jumpmap {
+    const std::map<std::string, jumpfunc> jumpmap {
             { "ADD", ::add_contact },
             { "SEARCH",::search_contact },
             { "REMOVE", ::remove_contact },
@@ -138,7 +135,7 @@ bool jump(const string& select) {
     const auto it = jumpmap.find(command);
     if (it != jumpmap.end()) it->second(options);
     else {
-        cout << "Invalid command\n";
+        std::cout << "Invalid command\n";
         return false;
     }
 
@@ -147,9 +144,9 @@ bool jump(const string& select) {
 
 int main()
 {
-    cout << "PHONEBOOK\n";
+    std::cout << "PHONEBOOK\n";
 
-    string pstr {
+    std::string pstr {
             "\nCommands: \nADD -n name -p phonenumber -k nickname\n"
             "SEARCH [-i <index>]\n"
             "REMOVE -i <index>/-p <phonenumber>\n"
@@ -160,7 +157,7 @@ int main()
     for (auto key = prompt(pstr); key != "EXIT"; key = prompt(pstr)) {
         if (key.size() > 1) jump(key);
     }
-    cout << "Bye!\n";
+    std::cout << "Bye!\n";
 
     return 0;
 }

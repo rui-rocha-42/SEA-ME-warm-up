@@ -11,7 +11,7 @@ Contact::Contact(std::string  name, std::string  phone_number, std::string  nick
     //std::cout << "contact ctor " << c_name << "\n";
 }
 
-        // Copy ctor
+// Copy ctor
 Contact::Contact(const Contact& c): c_name(c.c_name), c_nickname(c.c_nickname),
 c_phone_number(c.c_phone_number), c_bookmarked(c.c_bookmarked) {
     //std::cout << "contact copy ctor " << c_name << "\n";
@@ -22,10 +22,6 @@ Contact::Contact(Contact&& rhs) noexcept
         : c_name {std::move(rhs.c_name)}, c_phone_number {std::move(rhs.c_phone_number)},
         c_nickname {std::move(rhs.c_nickname)}, c_bookmarked {rhs.c_bookmarked} {
     //std::cout << "contact move ctor " << c_name << "\n";
-}
-
-Contact::~Contact() {
-    //std::cout << "contact destructor " << c_name << "\n";
 }
 
 bool Contact::operator==(const Contact& o) const {
@@ -43,7 +39,7 @@ Contact& Contact::operator = (Contact rhs) {
 }
 
 void Contact::print () const {
-    std::cout << "* Contact " << c_name << "(" << c_nickname << ") w phone " << c_phone_number << " " << (c_bookmarked ? "x": "o") << std::endl;
+    std::cout << "* Contact " << c_name << "(" << c_nickname << ") w phone " << c_phone_number << " " << (c_bookmarked ? "x": "o") << "\n";
 }
 
 bool Contact::bookmarked() const {
