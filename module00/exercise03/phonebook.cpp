@@ -26,7 +26,10 @@ void Phonebook::print() const {
         std::cout << "No contacts\n";
         return;
     }
-    for(const Contact& i : contacts) i.print();
+    for(auto i = 0; i < contacts.size(); ++i) {
+        std::cout << i << " - ";
+        contacts[i].print();
+    };
 }
 
 void Phonebook::print_bookmarks() const {
@@ -38,7 +41,10 @@ void Phonebook::print_bookmarks() const {
         std::cout << "No bookmarks\n";
         return;
     }
-    for(const Contact& i : bookmarks) i.print();
+    for(auto i = 0; i < bookmarks.size(); ++i) {
+        std::cout << i << " - ";
+        bookmarks[i].print();
+    };
 }
 
 std::optional<Contact> Phonebook::contact(int index) {

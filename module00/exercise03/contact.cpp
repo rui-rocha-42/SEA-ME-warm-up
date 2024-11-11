@@ -39,7 +39,7 @@ Contact& Contact::operator = (Contact rhs) {
 }
 
 void Contact::print () const {
-    std::cout << "* Contact " << c_name << "(" << c_nickname << ") w phone " << c_phone_number << " " << (c_bookmarked ? "x": "o") << "\n";
+    std::cout << "Contact " << c_name << "(" << c_nickname << ") w phone " << c_phone_number << " " << (c_bookmarked ? "x": "o") << "\n";
 }
 
 bool Contact::bookmarked() const {
