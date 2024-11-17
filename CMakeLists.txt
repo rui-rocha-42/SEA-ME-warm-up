@@ -31,3 +31,16 @@ add_executable(sports_car_expanded
         module01/exercise02/SportsCar.h
         module01/exercise02/ElectricCar.cpp
         module01/exercise02/ElectricCar.h)
+
+add_executable(car_model
+        module02/exercise01/main.cpp
+        module02/exercise01/Car.cpp
+        module02/exercise01/Car.h
+        module02/exercise01/Engine.cpp
+        module02/exercise01/Engine.h
+        module02/exercise01/Brake.cpp
+        module02/exercise01/Brake.h
+        module02/exercise01/Transmission.cpp
+        module02/exercise01/Transmission.h
+        module02/exercise01/Wheel.cpp
+        module02/exercise01/Wheel.h)
